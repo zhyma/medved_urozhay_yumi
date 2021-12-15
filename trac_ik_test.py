@@ -14,8 +14,6 @@ from threading import Lock
 class yumi_ik():
 
     def __init__(self):
-        
-
         # publish sequence
         self.pub_seq = [0,1,3,4,5,6,2]
         # right arm -> 0, then left arm -> 1
