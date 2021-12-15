@@ -25,9 +25,30 @@ class path_generator():
 
     def generate_path(self):
         path = []
-        # test to plot a line.
-        for i in range(30):
-            path.append([0.3, i/100, 0.4])
+        # # test to plot a line.
+        # for i in range(30):
+        #     path.append([0.3, i/100, 0.4])
+
+        # s for the center of the spiral, g for the center of the
+        # x, y, z. x and z are used for spiral, y is used for advance
+        s = [0.3, 0.1, 0.4]
+        g = [0.5, 0.1, 0.42]
+        t_0 = 0.2
+        t_e = 0.2+pi*2
+        n_samples = 20
+        n = -1/2
+        t_os = 0
+
+        r_0 = np.sqrt((s[0]-g[0])**2+(s[2]-g[2])**2)
+        a = r_0/np.power(t_0, n)
+        for i in range(n_samples):
+            dt = (t_e-t_0)*i/n_samples
+            r = a*np.power((t_0+dt), n)
+            t = -dt + t_os
+            x = r*np.cos(t) + s[0]
+            y = g[1] + 0.005*i
+            z = r*np.sin(t) + s[2]
+            path.append([x,y,z])
         
         return path
 
