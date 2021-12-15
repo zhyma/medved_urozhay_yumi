@@ -32,6 +32,8 @@ def talker():
         else:
             pub[i].publish(joints_val[i//2])
 
+    rospy.sleep(1)
+
 
 if __name__ == '__main__':
     talker()
