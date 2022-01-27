@@ -29,16 +29,23 @@ class path_generator():
         # for i in range(30):
         #     path.append([0.3, i/100, 0.4])
 
-        # s for the center of the spiral, g for the center of the
-        # x, y, z. x and z are used for spiral, y is used for advance
+        
+        # s for the center of the spiral
+        # x (front-back), y (left-right), z (up-down).
+        # x and z are used for spiral, y is used for advance
         s = [0.3, 0.1, 0.4]
-        g = [0.5, 0.1, 0.42]
+        # g for the center of the gripper
+        g = [0.6, 0.1, 0.42]
+        # starting angle theta_0
         t_0 = 0.2
+        # ending angle theta_end
         t_e = 0.2+pi*2
         n_samples = 20
         n = -1/2
+        # offset theta_offset
         t_os = 0
 
+        # r = a\theta^(-1/2)
         r_0 = np.sqrt((s[0]-g[0])**2+(s[2]-g[2])**2)
         a = r_0/np.power(t_0, n)
         for i in range(n_samples):

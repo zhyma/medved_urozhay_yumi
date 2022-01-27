@@ -154,6 +154,3 @@ if __name__ == '__main__':
 
     cartesian_plan, fraction = yumi.plan_cartesian_traj(yumi.group_l, path)
     yumi.execute_plan(cartesian_plan, yumi.group_l)
-
-    
-    
