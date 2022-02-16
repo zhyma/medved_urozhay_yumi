@@ -92,8 +92,6 @@ class move_yumi():
         # Note: there is no equivalent function for clear_joint_value_targets()
         group.clear_pose_targets()
 
-        ## END_SUB_TUTORIAL
-
         # For testing:
         # Note that since this section of code will not be included in the tutorials
         # we use the class variable rather than the copied state variable
@@ -115,20 +113,6 @@ class move_yumi():
           pose.orientation.w = quat[3]
           waypoints.append(pose)
 
-        # wpose = group.get_current_pose().pose
-        # wpose.position.z -= scale * 0.1  # First move up (z)
-        # wpose.position.y += scale * 0.2  # and sideways (y)
-        # waypoints.append(copy.deepcopy(wpose))
-
-        # wpose.position.x += scale * 0.1  # Second move forward/backwards in (x)
-        # waypoints.append(copy.deepcopy(wpose))
-
-        # wpose.position.y -= scale * 0.1  # Third move sideways (y)
-        # waypoints.append(copy.deepcopy(wpose))
-
-        # We want the Cartesian path to be interpolated at a resolution of 1 cm
-        # which is why we will specify 0.01 as the eef_step in Cartesian
-        # translation.  We will disable the jump threshold by setting it to 0.0 disabling:
         (plan, fraction) = group.compute_cartesian_path(
                                         waypoints,   # waypoints to follow
                                         0.01,        # eef_step
@@ -148,7 +132,7 @@ if __name__ == '__main__':
 
     pg = path_generator()
     path = pg.generate_path()
-    pg.publish_waypoints(path)
+    # pg.publish_waypoints(path)
 
     rospy.sleep(2)
 
