@@ -18,7 +18,7 @@ from yumi_gazebo.msg import CylinderProperties
 
 
 import sys
-# import copy
+import copy
 # import rospy
 import moveit_commander
 # import moveit_msgs.msg
@@ -38,21 +38,21 @@ class rod_detection():
         ...
 
     def callback(self, data):
-        self.rod_state.x = data.x
-        self.rod_state.y = data.y
-        self.rod_state.z = data.z
+        self.rod_state.position = copy.deepcopy(data.position)
+        self.rod_state.orientation = copy.deepcopy(data.orientation)
         self.rod_state.r = data.r
         self.rod_state.l = data.l
 
+        print(self.rod_state.position)
+
 
     def scene_add_rod(self, rod_info):
+        print(rod_info.position)
         cylinder_pose = PoseStamped()
         cylinder_pose.header.frame_id = "world"
         # assign cylinder's pose
-        cylinder_pose.pose.position.x = rod_info.x
-        cylinder_pose.pose.position.y = rod_info.y
-        cylinder_pose.pose.position.z = rod_info.z
-        cylinder_pose.pose.orientation.w = 1.0
+        cylinder_pose.pose.position = copy.deepcopy(rod_info.position)
+        cylinder_pose.pose.orientation = copy.deepcopy(rod_info.orientation)
         cylinder_name = "cylinder"
         # add_cylinder(self, name, pose, height, radius)
         self.scene.add_cylinder(cylinder_name, cylinder_pose, rod_info.l, rod_info.r)
@@ -62,12 +62,18 @@ class rod_detection():
         seconds = rospy.get_time()
         timeout = 5
         while (seconds - start < timeout) and not rospy.is_shutdown():
-            attached_objects = self.scene.get_attached_objects([cylinder_name])
-            is_attached = len(attached_objects.keys()) > 0
+            #attached_objects = self.scene.get_attached_objects([cylinder_name])
+            #print("attached_objects: ", end=',')
+            #print(attached_objects)
+            #is_attached = len(attached_objects.keys()) > 0
 
             is_known = cylinder_name in self.scene.get_known_object_names()
+            # print("is_known: ", end=',')
+            # print(self.scene.get_known_object_names())
 
-            if (is_attached) and (is_known):
+            #if (is_attached) and (is_known):
+            #    return True
+            if is_known:
                 return True
 
             rospy.sleep(0.1)
@@ -82,5 +88,5 @@ if __name__ == '__main__':
     scene = moveit_commander.PlanningSceneInterface()
     detector = rod_detection(scene)
 
-    rospy.sleep(5)
+    rospy.sleep(1)
     print(detector.scene_add_rod(detector.rod_state))
