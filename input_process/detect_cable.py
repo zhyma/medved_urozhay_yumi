@@ -43,9 +43,6 @@ class rod_detection():
         self.rod_state.r = data.r
         self.rod_state.l = data.l
 
-        print(self.rod_state.position)
-
-
     def scene_add_rod(self, rod_info):
         print(rod_info.position)
         cylinder_pose = PoseStamped()
@@ -62,16 +59,14 @@ class rod_detection():
         seconds = rospy.get_time()
         timeout = 5
         while (seconds - start < timeout) and not rospy.is_shutdown():
-            #attached_objects = self.scene.get_attached_objects([cylinder_name])
-            #print("attached_objects: ", end=',')
-            #print(attached_objects)
-            #is_attached = len(attached_objects.keys()) > 0
+            # attached_objects = self.scene.get_attached_objects([cylinder_name])
+            # print("attached_objects: ", end=',')
+            # print(attached_objects)
+            # is_attached = len(attached_objects.keys()) > 0
 
             is_known = cylinder_name in self.scene.get_known_object_names()
-            # print("is_known: ", end=',')
-            # print(self.scene.get_known_object_names())
 
-            #if (is_attached) and (is_known):
+            # if (is_attached) and (is_known):
             #    return True
             if is_known:
                 return True
@@ -88,5 +83,5 @@ if __name__ == '__main__':
     scene = moveit_commander.PlanningSceneInterface()
     detector = rod_detection(scene)
 
-    rospy.sleep(1)
     print(detector.scene_add_rod(detector.rod_state))
+    print(detector.rod_state)

@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+## re-initializing the RL environment (reset the rod and the cable)
+
 import rospy
 from yumi_gazebo.msg import CylinderProperties
 
-class env_update():
+class env_reset():
     def __init__(self):
         self.pub = rospy.Publisher('/set_rod_properties', CylinderProperties, queue_size = 10)
         rospy.sleep(1)
@@ -23,6 +25,6 @@ class env_update():
         print("environment re-initialized!")
 
 if __name__ == '__main__':
-    rospy.init_node('update_env', anonymous = True)
-    env_pub = env_update()
+    rospy.init_node('reset_env', anonymous = True)
+    env_pub = env_reset()
     env_pub.publish(0.3, 0, 0.3, 0.02, 0.1)
