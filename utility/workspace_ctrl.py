@@ -15,7 +15,7 @@ from moveit_commander.conversions import pose_to_list
 from transforms3d import euler
 from geometry_msgs.msg import Pose
 
-from show_path_test import path_generator
+from .spiral import path_generator
 
 def all_close(goal, actual, tolerance):
   """
@@ -46,11 +46,11 @@ class move_yumi():
         self.ctrl_group = ctrl_group
         
 
-        planning_frame = self.ctrL_group[0].get_planning_frame()
+        planning_frame = self.ctrl_group[0].get_planning_frame()
         print("============ Reference frame: %s", planning_frame)
 
         # We can also print the name of the end-effector link for this group:
-        eef_link = self.ctrL_group[0].get_end_effector_link()
+        eef_link = self.ctrl_group[0].get_end_effector_link()
         print("============ End effector: %s", eef_link)
 
         # We can get a list of all the groups in the robot:

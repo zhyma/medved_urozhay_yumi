@@ -8,10 +8,10 @@ from gazebo_msgs.srv import GetLinkState
 
 class cable_detection():
 
-    def __init__(self, len_links):
+    def __init__(self, no_of_links):
         # You need to initializing a node before instantiate the class
         self.links = []
-        self.len = len_links
+        self.no_of_links = no_of_links
         pass
 
     def get_links(self):
@@ -19,7 +19,7 @@ class cable_detection():
         self.links.clear()
 
         read_state = rospy.ServiceProxy('/gazebo/get_link_state', GetLinkState)
-        for i in range(self.len): 
+        for i in range(self.no_of_links): 
             state = read_state(link_name='link_'+str(i))
             # if state is not None:
             self.links.append(state)

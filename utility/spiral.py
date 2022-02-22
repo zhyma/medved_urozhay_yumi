@@ -4,7 +4,7 @@ import math
 from math import pi
 import numpy as np
 
-from trac_ik_python.trac_ik import IK
+# from trac_ik_python.trac_ik import IK
 import rospy
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float64

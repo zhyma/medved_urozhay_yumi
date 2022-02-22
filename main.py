@@ -25,6 +25,7 @@ def main():
     moveit_commander.roscpp_initialize(sys.argv)
     scene = moveit_commander.PlanningSceneInterface()
     robot = moveit_commander.RobotCommander()
+    ctrl_group = []
     ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
     ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
 
@@ -51,18 +52,18 @@ def main():
     # here get the rod state (from gazebo)
     print(rod.scene_add_rod(rod.rod_state))
 
-    cable = cable_detection()
+    cable = cable_detection(50)
     # get the links' state (from gazebo)
     cable.get_links()
 
     # find the link that is closest to the rod
     # Use data on x-z plane
     ptr = {'idx': 0, 'val':10e6}
-    rod_x = rod.rod_state.Position.x
-    rod_z = rod.rod_state.Position.z
-    for i in range(cable.len)
-        cable_x = i.Pose.Position.x
-        cable_z = i.Pose.Position.z
+    rod_x = rod.rod_state.position.x
+    rod_z = rod.rod_state.position.z
+    for i in range(cable.no_of_links):
+        cable_x = cable.links[i].Pose.Position.x
+        cable_z = cable.links[i].Pose.Position.z
         val = (rod_x-cable_x)**2 + (rod_z-cable_z)**2
         if val < ptr['val']:
             ptr['idx'] = i
