@@ -11,15 +11,22 @@ import moveit_commander
 from utility.detect_rod import rod_detection
 from utility.detect_cable import cable_detection
 from utility.workspace_ctrl import move_yumi
+from utility.jointspace_ctrl import robot_reset
 # moveit motion planning tool
 # from moveit.py import move_yumi
+
+from geometry_msgs.msg import Pose
+from transforms3d import euler
+
+from math import pi
 
 
 def main():
     rospy.init_node("wrap_wrap", anonymous=True)
     ## initializing the world environment (gazebo plugin)
     env_pub = env_reset()
-    env_pub.publish(0.3, 0, 0.2, 0.02, 0.2)
+    #
+    env_pub.publish(x=0.3, y=0, z=0.4, r=0.02, l=0.05)
 
     ## initializing the moveit 
     moveit_commander.roscpp_initialize(sys.argv)
@@ -37,8 +44,11 @@ def main():
     ## initialzing the yumi motion planner
     yumi = move_yumi(robot, scene, ctrl_group)
 
+    robot_reset()
+    rospy.sleep(10)
+
     ## left arm move out of the camera's fov
-    # pose_goal = geometry_msgs.msg.Pose()
+    pose_goal = Pose()
     # q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
     # pose_goal.position.x = 0.5
     # pose_goal.position.y = 0.1
@@ -50,6 +60,9 @@ def main():
     # yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
     
     # here get the rod state (from gazebo)
+    print("rod's state is:", end = ':')
+    rod.rod_state
+    print('adding rod to rviz scene')
     print(rod.scene_add_rod(rod.rod_state))
 
     cable = cable_detection(50)
@@ -62,16 +75,42 @@ def main():
     rod_x = rod.rod_state.position.x
     rod_z = rod.rod_state.position.z
     for i in range(cable.no_of_links):
-        cable_x = cable.links[i].Pose.Position.x
-        cable_z = cable.links[i].Pose.Position.z
+        link_pos = cable.links[i].link_state.pose.position
+
+        cable_x = link_pos.x
+        cable_z = link_pos.z
         val = (rod_x-cable_x)**2 + (rod_z-cable_z)**2
         if val < ptr['val']:
             ptr['idx'] = i
             ptr['val'] = val
 
+    print('contact section at: ', end = '')
+    print(ptr['idx'])
+
     ## calculate which link to hold on to
+    # a section of the link is 0.04
+    # the r of the rod is given by the rod's state
+    link_length = 0.04
+    r = rod.rod_state.r
+    need_links = int(2*pi*r/link_length)
+    grabbing_point = ptr['idx'] + need_links
+    print('grabing point is: ', end='')
+    print(grabbing_point)
 
     ## move the left end-effector to the target link
+    # pose_goal = geometry_msgs.msg.Pose()
+    q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    link2pick = cable.links[grabbing_point].link_state.pose.position
+    pose_goal.position.x = link2pick.x
+    pose_goal.position.y = link2pick.y
+    pose_goal.position.z = link2pick.z
+    pose_goal.orientation.x = q[0]
+    pose_goal.orientation.y = q[1]
+    pose_goal.orientation.z = q[2]
+    pose_goal.orientation.w = q[3]
+    print("go to pose to pick the cable: ", end="")
+    print(pose_goal)
+    yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
 
     ## left gripper grabs the link
 

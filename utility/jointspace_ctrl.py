@@ -13,7 +13,7 @@ _joint_lock = Lock()
 joints_val = [-1.4069, -2.0969, 0.2969, 0, 0, 0, 0.7069]
 
 
-def talker():
+def robot_reset():
     # pub = rospy.Publisher('/yumi/joint_pos_controller_' + str(0+1) + '_l/command', Float64, queue_size=10)
     pub = []
     for i in range(7):
@@ -21,9 +21,6 @@ def talker():
         pub.append(rospy.Publisher(topic_name, Float64, queue_size=10))
         topic_name = '/yumi/joint_pos_controller_' + str(i+1) + '_r/command'
         pub.append(rospy.Publisher(topic_name, Float64, queue_size=10))
-
-    rospy.init_node('yumi_test', anonymous=True)
-    rospy.sleep(1)
 
     for i in range(7*2):
         if i == 1 or i == 13:
@@ -36,4 +33,6 @@ def talker():
 
 
 if __name__ == '__main__':
-    talker()
+    rospy.init_node('yumi_test', anonymous=True)
+    rospy.sleep(1)
+    robot_reset()

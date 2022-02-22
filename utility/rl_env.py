@@ -10,7 +10,7 @@ class env_reset():
         self.pub = rospy.Publisher('/set_rod_properties', CylinderProperties, queue_size = 10)
         rospy.sleep(1)
 
-    def publish(self, x, y, z, r, l):
+    def publish(self, x=0.3, y=0, z=0.3, r=0.02, l=0.05):
         data = CylinderProperties()
         data.position.x = x
         data.position.y = y
@@ -27,4 +27,4 @@ class env_reset():
 if __name__ == '__main__':
     rospy.init_node('reset_env', anonymous = True)
     env_pub = env_reset()
-    env_pub.publish(0.3, 0, 0.3, 0.02, 0.1)
+    env_pub.publish(x=0.3, y=0, z=0.3, r=0.02, l=0.1)
