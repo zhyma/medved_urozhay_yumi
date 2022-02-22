@@ -40,19 +40,17 @@ def all_close(goal, actual, tolerance):
   return True
 
 class move_yumi():
-    def __init__(self):
-        moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node('yumi_test', anonymous=True)
-        self.robot = moveit_commander.RobotCommander()
-        self.scene = moveit_commander.PlanningSceneInterface()
+    def __init__(self, robot, scene, ctrl_group):
+        self.robot = robot
+        self.scene = scene
+        self.ctrl_group = ctrl_group
+        
 
-        self.group_l = moveit_commander.MoveGroupCommander('left_arm')
-
-        planning_frame = self.group_l.get_planning_frame()
+        planning_frame = self.ctrL_group[0].get_planning_frame()
         print("============ Reference frame: %s", planning_frame)
 
         # We can also print the name of the end-effector link for this group:
-        eef_link = self.group_l.get_end_effector_link()
+        eef_link = self.ctrL_group[0].get_end_effector_link()
         print("============ End effector: %s", eef_link)
 
         # We can get a list of all the groups in the robot:
@@ -65,23 +63,14 @@ class move_yumi():
         # print(robot.get_current_state())
         # print('')
     
-    def go_to_pose_goal(self, group):
+    def go_to_pose_goal(self, group, pose_goal):
         ## BEGIN_SUB_TUTORIAL plan_to_pose
         ##
         ## Planning to a Pose Goal
         ## ^^^^^^^^^^^^^^^^^^^^^^^
         ## We can plan a motion for this group to a desired pose for the
         ## end-effector:
-        pose_goal = geometry_msgs.msg.Pose()
-        q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
         
-        pose_goal.position.x = 0.5
-        pose_goal.position.y = 0.1
-        pose_goal.position.z = 0.42
-        pose_goal.orientation.x = q[0]
-        pose_goal.orientation.y = q[1]
-        pose_goal.orientation.z = q[2]
-        pose_goal.orientation.w = q[3]
         group.set_pose_target(pose_goal)
 
         ## Now, we call the planner to compute the plan and execute it.
@@ -125,8 +114,25 @@ class move_yumi():
         group.execute(plan, wait=True)
 
 if __name__ == '__main__':
-    yumi = move_yumi()
-    yumi.go_to_pose_goal(yumi.group_l)
+    moveit_commander.roscpp_initialize(sys.argv)
+    rospy.init_node('yumi_test', anonymous=True)
+    robot = moveit_commander.RobotCommander()
+    scene = moveit_commander.PlanningSceneInterface()
+    ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
+    ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
+
+    yumi = move_yumi(robot, scene, ctrl_group)
+
+    pose_goal = geometry_msgs.msg.Pose()
+    q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    pose_goal.position.x = 0.5
+    pose_goal.position.y = 0.1
+    pose_goal.position.z = 0.42
+    pose_goal.orientation.x = q[0]
+    pose_goal.orientation.y = q[1]
+    pose_goal.orientation.z = q[2]
+    pose_goal.orientation.w = q[3]
+    yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
     
     print("moving to the starting point")
 
