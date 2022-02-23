@@ -124,16 +124,16 @@ if __name__ == '__main__':
 
     yumi = move_yumi(robot, scene, ctrl_group)
 
-    # pose_goal = geometry_msgs.msg.Pose()
-    # q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
-    # pose_goal.position.x = 0.5
-    # pose_goal.position.y = 0.1
-    # pose_goal.position.z = 0.42
-    # pose_goal.orientation.x = q[0]
-    # pose_goal.orientation.y = q[1]
-    # pose_goal.orientation.z = q[2]
-    # pose_goal.orientation.w = q[3]
-    # yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
+    pose_goal = geometry_msgs.msg.Pose()
+    q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    pose_goal.position.x = 0.5
+    pose_goal.position.y = 0.1
+    pose_goal.position.z = 0.42
+    pose_goal.orientation.x = q[0]
+    pose_goal.orientation.y = q[1]
+    pose_goal.orientation.z = q[2]
+    pose_goal.orientation.w = q[3]
+    yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
     
     # print("moving to the starting point")
 
