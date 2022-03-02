@@ -87,7 +87,7 @@ class move_yumi():
         current_pose = group.get_current_pose().pose
         return all_close(pose_goal, current_pose, 0.01)
 
-    def plan_cartesian_traj(self, group, path):
+    def plan_cartesian_traj(self, groups, side, path):
         waypoints = []
         for wp in path:
           pose = Pose()
@@ -95,14 +95,19 @@ class move_yumi():
           pose.position.y = wp[1]
           pose.position.z = wp[2]
 
-          quat = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+          if side == 0:
+            # left
+            quat = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+          else:
+            # right
+            quat = euler.euler2quat(pi, 0, pi/2, 'sxyz')
           pose.orientation.x = quat[0]
           pose.orientation.y = quat[1]
           pose.orientation.z = quat[2]
           pose.orientation.w = quat[3]
           waypoints.append(pose)
 
-        (plan, fraction) = group.compute_cartesian_path(
+        (plan, fraction) = groups[side].compute_cartesian_path(
                                         waypoints,   # waypoints to follow
                                         0.01,        # eef_step
                                         0.0)         # jump_threshold

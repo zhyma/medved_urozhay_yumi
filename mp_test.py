@@ -16,7 +16,8 @@ from moveit_commander.conversions import pose_to_list
 from transforms3d import euler
 from geometry_msgs.msg import Pose
 
-from utility.spiral import path_generator
+from utility.jointspace_ctrl import robot_reset
+from utility.path_generator import path_generator
 
 from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Quaternion, Pose, Point, Vector3
@@ -145,19 +146,23 @@ if __name__ == '__main__':
     ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
     ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
 
-    test_ctrl_group = moveit_commander.MoveGroupCommander('left_gripper')
-    eef_link = test_ctrl_group.get_end_effector_link()
-    print("============ gripper end effector: {0}".format(eef_link))
+    robot_reset(ctrl_group)
+
+    # test_ctrl_group = moveit_commander.MoveGroupCommander('left_gripper')
+    # eef_link = test_ctrl_group.get_end_effector_link()
+    # print("============ gripper end effector: {0}".format(eef_link))
 
     marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size = 10)
     rospy.sleep(0.5)
-    show_marker(marker_pub, x=pos.x, y=pos.y-0.12, z=pos.z)
+    show_marker(marker_pub, x=pos.x, y=pos.y+0.12, z=pos.z)
     # print("display marker")
 
     yumi = move_yumi(robot, scene, ctrl_group)
 
     pose_goal = geometry_msgs.msg.Pose()
-    q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    # q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    # right
+    q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
     pose_goal.position.x = pos.x
     pose_goal.position.y = pos.y
     pose_goal.position.z = pos.z
@@ -165,7 +170,7 @@ if __name__ == '__main__':
     pose_goal.orientation.y = q[1]
     pose_goal.orientation.z = q[2]
     pose_goal.orientation.w = q[3]
-    yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
+    yumi.go_to_pose_goal(yumi.ctrl_group[1], pose_goal)
     
     # print("moving to the starting point")
 
