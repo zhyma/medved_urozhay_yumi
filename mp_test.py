@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # modified from https://github.com/ros-planning/moveit_tutorials/blob/kinetic-devel/doc/move_group_python_interface/scripts/move_group_python_interface_tutorial.py
+# motion planning test (add visual marker in rViz, move to the marker)
 
 import sys
 import copy

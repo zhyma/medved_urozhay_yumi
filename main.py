@@ -13,6 +13,7 @@ from utility.detect_cable import cable_detection
 from utility.workspace_ctrl import move_yumi
 from utility.jointspace_ctrl import robot_reset
 from utility.path_generator import path_generator
+from utility.gripper_ctrl import gripper_ctrl
 # moveit motion planning tool
 # from moveit.py import move_yumi
 
@@ -24,11 +25,10 @@ from math import pi
 
 def main():
     rospy.init_node("wrap_wrap", anonymous=True)
-    ## initializing the world environment (gazebo plugin)
-    env_pub = env_reset()
-    env_pub.publish(x=0.3, y=0, z=0.4, r=0.02, l=0.05)
 
     pg = path_generator()
+
+    gripper = gripper_ctrl()
 
     ## initializing the moveit 
     moveit_commander.roscpp_initialize(sys.argv)
@@ -38,17 +38,26 @@ def main():
     ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
     ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
 
+    ## initialzing the yumi motion planner
+    yumi = move_yumi(robot, scene, ctrl_group)
+
+    # currently joints space control is not working
+    gripper.l_open()
+    gripper.r_open()
+    robot_reset(ctrl_group)
+    gripper.l_open()
+
+    ## initializing the world environment (gazebo plugin)
+    env_pub = env_reset()
+    env_pub.publish(x=0.3, y=0, z=0.4, r=0.02, l=0.05)
+
     ## prepare to show obstacle in rviz
     rod = rod_detection(scene)
     ## Need time to initializing
     rospy.sleep(3)
 
-    ## initialzing the yumi motion planner
-    yumi = move_yumi(robot, scene, ctrl_group)
-
-    # currently joints space control is not working
-    robot_reset()
-    rospy.sleep(10)
+    
+    # rospy.sleep(10)
 
     ## left arm move out of the camera's fov
     pose_goal = Pose()
@@ -104,6 +113,9 @@ def main():
     print("go to pose have the cable in between gripper: ", end="")
 
     ## left gripper grabs the link
+    gripper.l_close()
+
+    ## attach the object to the gripper
 
     ## generate spiral here
     # path = 

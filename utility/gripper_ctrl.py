@@ -10,16 +10,16 @@ class gripper_ctrl():
     ...
 
   def l_close(self):
-    self.ctrl_l.publish(0.01)
+    self.ctrl_l.publish(-0.7)
 
   def r_close(self):
-    self.ctrl_r.publish(0.01)
+    self.ctrl_r.publish(-0.7)
 
   def l_open(self):
-    self.ctrl_l.publish(0.04)
+    self.ctrl_l.publish(10)
 
   def r_open(self):
-    self.ctrl_r.publish(0.04)
+    self.ctrl_r.publish(10)
 
 if __name__ == '__main__':
   rospy.init_node('gripper_ctrl')
