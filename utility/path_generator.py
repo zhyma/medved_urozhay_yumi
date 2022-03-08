@@ -8,7 +8,7 @@ class path_generator():
     def __init__(self):
         ...
 
-    def generate_spiral(self, sprial_params, gripper_states):
+    def generate_spiral(self, spiral_params, gripper_states):
         path = []
         # # test to plot a line.
         # for i in range(30):
@@ -18,11 +18,11 @@ class path_generator():
         # s is the center of the rod
         # x (front-back), y (left-right), z (up-down).
         # x and z are used for spiral, y is used for advance
-        # s = spiral_params
-        s = [0.3, 0.1, 0.4]
+        s = spiral_params
+        # s = [0.3, 0.1, 0.4]
         # g is the gripper's starting position
-        # g = gripper_states
-        g = [0.6, 0.1, 0.42]
+        g = gripper_states
+        # g = [0.6, 0.1, 0.42]
         # starting angle theta_0
         t_0 = 0.2
         # ending angle theta_end

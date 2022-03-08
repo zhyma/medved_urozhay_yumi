@@ -23,7 +23,7 @@ from visualization_msgs.msg import Marker
 from geometry_msgs.msg import Quaternion, Pose, Point, Vector3
 from std_msgs.msg import Header, ColorRGBA
 
-from utility.add_marker import show_marker
+# from utility.add_marker import show_marker
 
 def all_close(goal, actual, tolerance):
   """
@@ -142,43 +142,51 @@ if __name__ == '__main__':
     rospy.init_node('yumi_test', anonymous=True)
     robot = moveit_commander.RobotCommander()
     scene = moveit_commander.PlanningSceneInterface()
+
+    group_names = robot.get_group_names()
+    print("============ Available Planning Groups: {0}".format(group_names))
+
     ctrl_group = []
     ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
     ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
 
     robot_reset(ctrl_group)
 
-    # test_ctrl_group = moveit_commander.MoveGroupCommander('left_gripper')
-    # eef_link = test_ctrl_group.get_end_effector_link()
-    # print("============ gripper end effector: {0}".format(eef_link))
+    eef_link = ctrl_group[1].get_end_effector_link()
+    print("============ right arm end effector: {0}".format(eef_link))
 
-    marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size = 10)
-    rospy.sleep(0.5)
-    show_marker(marker_pub, x=pos.x, y=pos.y+0.12, z=pos.z)
-    # print("display marker")
+    # test_ctrl_group = moveit_commander.MoveGroupCommander('left_arm')
+    ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
+    eef_link = ctrl_group[0].get_end_effector_link()
+    print("============ gripper end effector: {0}".format(eef_link))
 
-    yumi = move_yumi(robot, scene, ctrl_group)
+    # marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size = 10)
+    # rospy.sleep(0.5)
+    # show_marker(marker_pub, x=pos.x, y=pos.y+0.12, z=pos.z)
+    # # print("display marker")
 
-    pose_goal = geometry_msgs.msg.Pose()
-    # q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
-    # right
-    q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
-    pose_goal.position.x = pos.x
-    pose_goal.position.y = pos.y
-    pose_goal.position.z = pos.z
-    pose_goal.orientation.x = q[0]
-    pose_goal.orientation.y = q[1]
-    pose_goal.orientation.z = q[2]
-    pose_goal.orientation.w = q[3]
-    yumi.go_to_pose_goal(yumi.ctrl_group[1], pose_goal)
+    # yumi = move_yumi(robot, scene, ctrl_group)
+
+    # pose_goal = geometry_msgs.msg.Pose()
+    # # q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    # # right
+    # q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
+    # pose_goal.position.x = pos.x
+    # pose_goal.position.y = pos.y
+    # pose_goal.position.z = pos.z
+    # pose_goal.orientation.x = q[0]
+    # pose_goal.orientation.y = q[1]
+    # pose_goal.orientation.z = q[2]
+    # pose_goal.orientation.w = q[3]
+    # yumi.go_to_pose_goal(yumi.ctrl_group[1], pose_goal)
     
-    # print("moving to the starting point")
+    # # print("moving to the starting point")
 
-    # pg = path_generator()
-    # path = pg.generate_path()
-    # # pg.publish_waypoints(path)
+    # # pg = path_generator()
+    # # path = pg.generate_path()
+    # # # pg.publish_waypoints(path)
 
-    # rospy.sleep(2)
+    # # rospy.sleep(2)
 
-    # cartesian_plan, fraction = yumi.plan_cartesian_traj(yumi.group_l, path)
-    # yumi.execute_plan(cartesian_plan, yumi.group_l)
+    # # cartesian_plan, fraction = yumi.plan_cartesian_traj(yumi.group_l, path)
+    # # yumi.execute_plan(cartesian_plan, yumi.group_l)

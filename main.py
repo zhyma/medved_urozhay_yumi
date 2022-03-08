@@ -40,6 +40,10 @@ def main():
     ctrl_group.append(moveit_commander.MoveGroupCommander('left_arm'))
     ctrl_group.append(moveit_commander.MoveGroupCommander('right_arm'))
 
+    # gripper_group = []
+    # gripper_group.append(moveit_commander.MoveGroupCommander('left_gripper'))
+    # gripper_group.append(moveit_commander.MoveGroupCommander('right_gripper'))
+
     ## initialzing the yumi motion planner
     yumi = move_yumi(robot, scene, ctrl_group)
 
@@ -53,7 +57,10 @@ def main():
 
     ## initializing the world environment (gazebo plugin)
     env_pub = env_reset()
-    env_pub.publish(x=0.3, y=0, z=0.4, r=0.02, l=0.05)
+    env_pub.publish(x=0.33, y=0, z=0.35, r=0.01, l=0.2)
+
+    rospy.sleep(3)
+
 
     ## prepare to show obstacle in rviz
     rod = rod_detection(scene)
@@ -80,6 +87,7 @@ def main():
     # Use data on x-z plane
     ptr = {'idx': 0, 'val':10e6}
     rod_x = rod.rod_state.position.x
+    rod_y = rod.rod_state.position.y
     rod_z = rod.rod_state.position.z
     for i in range(cable.no_of_links):
         link_pos = cable.links[i].link_state.pose.position
@@ -103,9 +111,17 @@ def main():
 
     ## move the right end-effector to the target link
     #q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
+
+    cable.get_links()
     link2pick = cable.links[grabbing_point].link_state.pose.position
-    start = [link2pick.x, link2pick.y + 0.12+0.25, link2pick.z]
-    stop  = [link2pick.x, link2pick.y + 0.12, link2pick.z]
+    start = [link2pick.x, link2pick.y - 0.12 - 0.25, link2pick.z]
+    yumi.go_to_pose_goal(ctrl_group[1], pose_goal)
+    
+    cable.get_links()
+    link2pick = cable.links[grabbing_point].link_state.pose.position
+    stop  = [link2pick.x, link2pick.y - 0.12, link2pick.z]
+
+    goal.show(x=stop[0], y=stop[1], z=stop[2])
 
     path = [start, stop]
     cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 1, path)
@@ -115,34 +131,40 @@ def main():
     ## left gripper grabs the link
     gripper.r_close()
 
+    # ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
+    # eef_link = ctrl_group[0].get_end_effector_link()
+    # scene.attach_box(eef_link, box_name, touch_links=touch_links)
+    
+
+    ##-------------------##
+    ## calculate which link to hold on to for the LEFT hand
+    ## the left hand will be used for wrapping
+    ## a section of the link is 0.04
+    ## the r of the rod is given by the rod's state
+    link_length = 0.04
+    # need to include the radius of the end-effector (approix ~ 157mm)
+    r = rod.rod_state.r + 0.02
+    need_links = int(2*pi*r/link_length)
+    grabbing_point = ptr['idx'] + need_links
+    print('grabing point is: ', end='')
+    print(grabbing_point)
+
+    ## move the left end-effector to the target link
+    # pose_goal = geometry_msgs.msg.Pose()
+    #q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
+    link2pick = cable.links[grabbing_point].link_state.pose.position
+    start = [link2pick.x, link2pick.y + 0.12+0.25, link2pick.z]
+    stop  = [link2pick.x, link2pick.y + 0.12, link2pick.z]
+
     goal.show(x=stop[0], y=stop[1], z=stop[2])
 
-    # ##-------------------##
-    # ## calculate which link to hold on to for the LEFT hand
-    # ## the left hand will be used for wrapping
-    # ## a section of the link is 0.04
-    # ## the r of the rod is given by the rod's state
-    # link_length = 0.04
-    # r = rod.rod_state.r
-    # need_links = int(3*pi*r/link_length)
-    # grabbing_point = ptr['idx'] + need_links
-    # print('grabing point is: ', end='')
-    # print(grabbing_point)
+    path = [start, stop]
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
+    yumi.execute_plan(cartesian_plan, ctrl_group[0])
+    print("go to pose have the cable in between gripper: ", end="")
 
-    # ## move the left end-effector to the target link
-    # # pose_goal = geometry_msgs.msg.Pose()
-    # #q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
-    # link2pick = cable.links[grabbing_point].link_state.pose.position
-    # start = [link2pick.x, link2pick.y + 0.12+0.25, link2pick.z]
-    # stop  = [link2pick.x, link2pick.y + 0.12, link2pick.z]
-
-    # path = [start, stop]
-    # cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
-    # yumi.execute_plan(cartesian_plan, ctrl_group[0])
-    # print("go to pose have the cable in between gripper: ", end="")
-
-    # ## left gripper grabs the link
-    # gripper.l_close()
+    ## left gripper grabs the link
+    gripper.l_close()
 
 
     ## attach the object to the gripper
@@ -150,11 +172,15 @@ def main():
 
     ##-------------------##
     ## generate spiral here
-    # path = 
+    # s is the center of the rod
+    spiral_params = [rod_x, rod_y, rod_z]
+    # g is the gripper's starting position
+    gripper_states = stop
+    path = pg.generate_spiral(spiral_params, gripper_states)
 
     ## motion planning and executing
-    # cartesian_plan, fraction = yumi.plan_cartesian_traj(yumi.group_l, path)
-    # yumi.execute_plan(cartesian_plan, yumi.group_l)
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
+    yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
     ## left gripper releases the link
 
