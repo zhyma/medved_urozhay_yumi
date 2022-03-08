@@ -3,9 +3,16 @@
 from math import pi, sqrt
 import numpy as np
 
+import rospy
+from nav_msgs.msg import Path
+from geometry_msgs.msg import PoseStamped
+from transforms3d import euler
+
+
 class path_generator():
 
     def __init__(self):
+        self.waypoint_pub = rospy.Publisher('yumi_waypoint', Path, queue_size=1, latch=True)
         ...
 
     def generate_spiral(self, spiral_params, gripper_states):
@@ -60,3 +67,29 @@ class path_generator():
             path.append([start[0]+i*dx, start[1]+i*dx, start[2]+i*dx])
 
         return path
+
+    def publish_waypoints(self, path):
+        """
+        Publish the ROS message containing the waypoints
+        """
+
+        msg = Path()
+        msg.header.frame_id = "world"
+        msg.header.stamp = rospy.Time.now()
+
+        for wp in path:
+            pose = PoseStamped()
+            pose.pose.position.x = wp[0]
+            pose.pose.position.y = wp[1]
+            pose.pose.position.z = wp[2]
+
+            quat = euler.euler2quat(-pi/2, 0, pi/2, 'sxyz')
+            pose.pose.orientation.x = quat[0]
+            pose.pose.orientation.y = quat[1]
+            pose.pose.orientation.z = quat[2]
+            pose.pose.orientation.w = quat[3]
+            msg.poses.append(pose)
+
+        self.waypoint_pub.publish(msg)
+        rospy.loginfo("Published {} waypoints.".format(len(msg.poses)))
+        return 

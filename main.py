@@ -20,6 +20,7 @@ from utility.add_marker      import marker
 
 from geometry_msgs.msg import Pose
 from transforms3d import euler
+import moveit_msgs.msg
 
 from math import pi
 
@@ -30,6 +31,12 @@ def main():
     pg = path_generator()
     gripper = gripper_ctrl()
     goal = marker()
+
+    display_trajectory_publisher = rospy.Publisher(
+        "/move_group/display_planned_path",
+        moveit_msgs.msg.DisplayTrajectory,
+        queue_size=20,
+    )
 
     ##-------------------##
     ## initializing the moveit 
@@ -170,17 +177,18 @@ def main():
     ## attach the object to the gripper
 
 
-    ##-------------------##
-    ## generate spiral here
-    # s is the center of the rod
-    spiral_params = [rod_x, rod_y, rod_z]
-    # g is the gripper's starting position
-    gripper_states = stop
-    path = pg.generate_spiral(spiral_params, gripper_states)
+    # ##-------------------##
+    # ## generate spiral here
+    # # s is the center of the rod
+    # spiral_params = [rod_x, rod_y, rod_z]
+    # # g is the gripper's starting position
+    # gripper_states = stop
+    # path = pg.generate_spiral(spiral_params, gripper_states)
+    # pg.publish_waypoints(path)
 
-    ## motion planning and executing
-    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
-    yumi.execute_plan(cartesian_plan, ctrl_group[0])
+    # ## motion planning and executing
+    # cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
+    # yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
     ## left gripper releases the link
 
