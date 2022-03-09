@@ -151,7 +151,7 @@ def main():
     link_length = 0.04
     # need to include the radius of the end-effector (approix ~ 157mm)
     r = rod.rod_state.r + 0.02
-    need_links = int(2*pi*r/link_length)
+    need_links = int(3*pi*r/link_length)
     grabbing_point = ptr['idx'] + need_links
     print('grabing point is: ', end='')
     print(grabbing_point)
@@ -177,23 +177,23 @@ def main():
     ## attach the object to the gripper
 
 
-    # ##-------------------##
-    # ## generate spiral here
-    # # s is the center of the rod
-    # spiral_params = [rod_x, rod_y, rod_z]
-    # # g is the gripper's starting position
-    # gripper_states = stop
-    # path = pg.generate_spiral(spiral_params, gripper_states)
-    # pg.publish_waypoints(path)
+    ##-------------------##
+    ## generate spiral here
+    # s is the center of the rod
+    spiral_params = [rod_x, rod_y, rod_z]
+    # g is the gripper's starting position
+    gripper_states = stop
+    path = pg.generate_spiral(spiral_params, gripper_states)
+    pg.publish_waypoints(path)
 
-    # ## motion planning and executing
-    # cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
-    # yumi.execute_plan(cartesian_plan, ctrl_group[0])
+    ## motion planning and executing
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
+    yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
-    ## left gripper releases the link
+    # left gripper releases the link
 
-    ## left arm move out of the camera's fov
-    # yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
+    # left arm move out of the camera's fov
+    yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
 
 if __name__ == '__main__':
     main()

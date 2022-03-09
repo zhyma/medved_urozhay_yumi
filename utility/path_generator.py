@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from math import pi, sqrt
+from math import pi, sqrt, atan
 import numpy as np
 
 import rospy
@@ -34,10 +34,11 @@ class path_generator():
         t_0 = 0.2
         # ending angle theta_end
         t_e = 0.2+pi*2
-        n_samples = 20
+        n_samples = 8
         n = -1/2
         # offset theta_offset
-        t_os = 0
+        # t_os = 0
+        t_os = atan((g[2]-s[2])/(g[0]-s[0]))
 
         # r = a\theta^(-1/2)
         r_0 = np.sqrt((s[0]-g[0])**2+(s[2]-g[2])**2)
