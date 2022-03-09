@@ -64,7 +64,7 @@ def main():
 
     ## initializing the world environment (gazebo plugin)
     env_pub = env_reset()
-    env_pub.publish(x=0.33, y=0, z=0.35, r=0.01, l=0.2)
+    env_pub.publish(x=0.200, y=0, z=0.300, r=0.01, l=0.1)
 
     rospy.sleep(3)
 
@@ -138,9 +138,9 @@ def main():
     ## left gripper grabs the link
     gripper.r_close()
 
-    # ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
-    # eef_link = ctrl_group[0].get_end_effector_link()
-    # scene.attach_box(eef_link, box_name, touch_links=touch_links)
+    # #ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
+    # #eef_link = ctrl_group[0].get_end_effector_link()
+    # #scene.attach_box(eef_link, box_name, touch_links=touch_links)
     
 
     ##-------------------##
@@ -151,7 +151,7 @@ def main():
     link_length = 0.04
     # need to include the radius of the end-effector (approix ~ 157mm)
     r = rod.rod_state.r + 0.02
-    need_links = int(3*pi*r/link_length)
+    need_links = int(2*pi*r/link_length)+3
     grabbing_point = ptr['idx'] + need_links
     print('grabing point is: ', end='')
     print(grabbing_point)
@@ -160,8 +160,8 @@ def main():
     # pose_goal = geometry_msgs.msg.Pose()
     #q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
     link2pick = cable.links[grabbing_point].link_state.pose.position
-    start = [link2pick.x, link2pick.y + 0.12+0.25, link2pick.z]
-    stop  = [link2pick.x, link2pick.y + 0.12, link2pick.z]
+    start = [link2pick.x, link2pick.y + 0.09+0.25, link2pick.z]
+    stop  = [link2pick.x, link2pick.y + 0.09, link2pick.z]
 
     goal.show(x=stop[0], y=stop[1], z=stop[2])
 
