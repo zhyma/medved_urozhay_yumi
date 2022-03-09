@@ -109,38 +109,42 @@ def main():
     print('contact section at: ', end = '')
     print(ptr['idx'])
 
-    ##-------------------##
-    ## calculate which link to hold on to for the RIGHT hand
-    ## the right hand will be used for keeping the cable in position
-    ## so here an arbitary value will be given
+    # ##-------------------##
+    # ## calculate which link to hold on to for the RIGHT hand
+    # ## the right hand will be used for keeping the cable in position
+    # ## so here an arbitary value will be given
 
-    grabbing_point = ptr['idx'] - 5
+    # grabbing_point = ptr['idx'] - 4
 
-    ## move the right end-effector to the target link
-    #q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
+    # ## move the right end-effector to the target link
+    # #q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
 
-    cable.get_links()
-    link2pick = cable.links[grabbing_point].link_state.pose.position
-    start = [link2pick.x, link2pick.y - 0.12 - 0.25, link2pick.z]
-    yumi.go_to_pose_goal(ctrl_group[1], pose_goal)
+    # cable.get_links()
+    # link1 = cable.links[grabbing_point].link_state.pose.position
+    # link2 = cable.links[grabbing_point-1].link_state.pose.position
+    # x = (link1.x + link2.x)/2
+    # y = (link1.y + link2.y)/2
+    # z = (link1.z + link2.z)/2
+    # start = [x, y - 0.12 - 0.25, z]
+    # yumi.go_to_pose_goal(ctrl_group[1], pose_goal)
     
-    cable.get_links()
-    link2pick = cable.links[grabbing_point].link_state.pose.position
-    stop  = [link2pick.x, link2pick.y - 0.12, link2pick.z]
+    # cable.get_links()
+    # link2pick = cable.links[grabbing_point].link_state.pose.position
+    # stop  = [x, y - 0.12, z]
 
-    goal.show(x=stop[0], y=stop[1], z=stop[2])
+    # goal.show(x=stop[0], y=stop[1], z=stop[2])
 
-    path = [start, stop]
-    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 1, path)
-    yumi.execute_plan(cartesian_plan, ctrl_group[1])
-    print("go to pose have the cable in between gripper: ", end="")
+    # path = [start, stop]
+    # cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 1, path)
+    # yumi.execute_plan(cartesian_plan, ctrl_group[1])
+    # print("go to pose have the cable in between gripper: ", end="")
 
-    ## left gripper grabs the link
-    gripper.r_close()
+    # ## left gripper grabs the link
+    # gripper.r_close()
 
-    # #ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
-    # #eef_link = ctrl_group[0].get_end_effector_link()
-    # #scene.attach_box(eef_link, box_name, touch_links=touch_links)
+    # # #ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
+    # # #eef_link = ctrl_group[0].get_end_effector_link()
+    # # #scene.attach_box(eef_link, box_name, touch_links=touch_links)
     
 
     ##-------------------##
@@ -150,8 +154,9 @@ def main():
     ## the r of the rod is given by the rod's state
     link_length = 0.04
     # need to include the radius of the end-effector (approix ~ 157mm)
-    r = rod.rod_state.r + 0.02
-    need_links = int(2*pi*r/link_length)+3
+    r = rod.rod_state.r + 0.04
+    need_links = int(2*pi*r/link_length)-1
+    print('need number of links:{0}'.format(need_links))
     grabbing_point = ptr['idx'] + need_links
     print('grabing point is: ', end='')
     print(grabbing_point)
@@ -159,9 +164,13 @@ def main():
     ## move the left end-effector to the target link
     # pose_goal = geometry_msgs.msg.Pose()
     #q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
-    link2pick = cable.links[grabbing_point].link_state.pose.position
-    start = [link2pick.x, link2pick.y + 0.09+0.25, link2pick.z]
-    stop  = [link2pick.x, link2pick.y + 0.09, link2pick.z]
+    link1 = cable.links[grabbing_point].link_state.pose.position
+    link2 = cable.links[grabbing_point+1].link_state.pose.position
+    x = (link1.x + link2.x)/2
+    y = (link1.y + link2.y)/2
+    z = (link1.z + link2.z)/2
+    start = [x, y + 0.10+0.25, z]
+    stop  = [x, y + 0.10, z]
 
     goal.show(x=stop[0], y=stop[1], z=stop[2])
 
