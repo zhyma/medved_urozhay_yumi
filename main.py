@@ -64,7 +64,7 @@ def main():
 
     ## initializing the world environment (gazebo plugin)
     env_pub = env_reset()
-    env_pub.publish(x=0.200, y=0, z=0.300, r=0.01, l=0.1)
+    env_pub.publish(x=0.300, y=0, z=0.3500, r=0.01, l=0.1)
 
     rospy.sleep(3)
 
@@ -86,7 +86,7 @@ def main():
     print('adding rod to rviz scene')
     print(rod.scene_add_rod(rod.rod_state))
 
-    cable = cable_detection(50)
+    cable = cable_detection(70)
     # get the links' state (from gazebo)
     cable.get_links()
 
@@ -152,9 +152,9 @@ def main():
     ## the left hand will be used for wrapping
     ## a section of the link is 0.04
     ## the r of the rod is given by the rod's state
-    link_length = 0.04
+    link_length = 0.01
     # need to include the radius of the end-effector (approix ~ 157mm)
-    r = rod.rod_state.r + 0.04
+    r = rod.rod_state.r + 0.035
     need_links = int(2*pi*r/link_length)-1
     print('need number of links:{0}'.format(need_links))
     grabbing_point = ptr['idx'] + need_links
@@ -169,8 +169,8 @@ def main():
     x = (link1.x + link2.x)/2
     y = (link1.y + link2.y)/2
     z = (link1.z + link2.z)/2
-    start = [x, y + 0.10+0.25, z]
-    stop  = [x, y + 0.10, z]
+    start = [x+0.01, y + 0.10+0.25, z]
+    stop  = [x+0.01, y + 0.10, z]
 
     goal.show(x=stop[0], y=stop[1], z=stop[2])
 
