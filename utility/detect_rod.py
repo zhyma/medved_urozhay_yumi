@@ -14,7 +14,8 @@ from transforms3d import euler
 from nav_msgs.msg import Path
 from geometry_msgs.msg import PoseStamped
 
-from yumi_gazebo.msg import CylinderProperties
+from rs2pcl.msg import CylinderProperties
+
 
 import sys
 import copy
@@ -31,16 +32,25 @@ class rod_detection():
         self.scene = scene
         self.rod_state = CylinderProperties()
         # directly get the true value from Gazebo
-        rospy.Subscriber("/get_rod_properties",CylinderProperties, self.callback)
+        # rospy.Subscriber("/get_rod_properties",CylinderProperties, self.callback)
 
     def detect(self):
-        ...
+        self.rod_state.position.x = 0.2
+        self.rod_state.position.y = 0
+        self.rod_state.position.z = 0.2
+        self.rod_state.orientation.x = 0
+        self.rod_state.orientation.y = 0
+        self.rod_state.orientation.z = 0
+        self.rod_state.orientation.w = 1
+        self.rod_state.r = 0.025
+        self.rod_state.l = 0.2
 
     def callback(self, data):
-        self.rod_state.position = copy.deepcopy(data.position)
-        self.rod_state.orientation = copy.deepcopy(data.orientation)
-        self.rod_state.r = data.r
-        self.rod_state.l = data.l
+        # self.rod_state.position = copy.deepcopy(data.position)
+        # self.rod_state.orientation = copy.deepcopy(data.orientation)
+        # self.rod_state.r = data.r
+        # self.rod_state.l = data.l
+        ...
 
     def scene_add_rod(self, rod_info):
         print(rod_info.position)
