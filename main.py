@@ -62,11 +62,7 @@ def main():
     gripper.l_open()
     gripper.r_open()
 
-    ## initializing the world environment (gazebo plugin)
-    env_pub = env_reset()
-    env_pub.publish(x=0.300, y=0, z=0.3500, r=0.01, l=0.1)
-
-    rospy.sleep(3)
+    rospy.sleep(1)
 
 
     ## prepare to show obstacle in rviz
@@ -86,7 +82,7 @@ def main():
     print('adding rod to rviz scene')
     print(rod.scene_add_rod(rod.rod_state))
 
-    cable = cable_detection(70)
+    cable = cable_detection(100)
     # get the links' state (from gazebo)
     cable.get_links()
 
@@ -182,10 +178,6 @@ def main():
     ## left gripper grabs the link
     gripper.l_close()
 
-
-    ## attach the object to the gripper
-
-
     ##-------------------##
     ## generate spiral here
     # s is the center of the rod
@@ -200,6 +192,7 @@ def main():
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
     # left gripper releases the link
+    gripper.l_open()
 
     # left arm move out of the camera's fov
     yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
