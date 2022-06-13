@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from math import pi, sqrt, atan
+from math import pi, sqrt, atan2
 import numpy as np
 
 import rospy
@@ -38,7 +38,7 @@ class path_generator():
         n = -1/2
         # offset theta_offset
         # t_os = 0
-        t_os = atan((g[2]-s[2])/(g[0]-s[0]))
+        t_os = atan2((g[2]-s[2]),(g[0]-s[0]))
 
         # r = a\theta^(-1/2)
         r_0 = np.sqrt((s[0]-g[0])**2+(s[2]-g[2])**2)
@@ -47,7 +47,8 @@ class path_generator():
             dt = (t_e-t_0)*i/n_samples
             r = a*np.power((t_0+dt), n)
             t = -dt + t_os
-            x = r*np.cos(t) + s[0]
+            # x = r*np.cos(t) + s[0]
+            x = -r*np.cos(t) + s[0]
             y = g[1] + 0.005*i
             z = r*np.sin(t) + s[2]
             path.append([x,y,z])

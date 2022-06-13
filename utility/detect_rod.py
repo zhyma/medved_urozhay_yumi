@@ -35,14 +35,15 @@ class rod_detection():
         # rospy.Subscriber("/get_rod_properties",CylinderProperties, self.callback)
 
     def detect(self):
-        self.rod_state.position.x = 0.2
-        self.rod_state.position.y = 0
-        self.rod_state.position.z = 0.2
-        self.rod_state.orientation.x = 0
+        # mock up pose and dims
+        self.rod_state.position.x = 0.35
+        self.rod_state.position.y = -0.15
+        self.rod_state.position.z = 0.25
+        self.rod_state.orientation.x = 0.707
         self.rod_state.orientation.y = 0
         self.rod_state.orientation.z = 0
-        self.rod_state.orientation.w = 1
-        self.rod_state.r = 0.025
+        self.rod_state.orientation.w = 0.707
+        self.rod_state.r = 0.02
         self.rod_state.l = 0.2
 
     def callback(self, data):
