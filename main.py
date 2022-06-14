@@ -32,12 +32,6 @@ def main():
     gripper = gripper_ctrl()
     goal = marker()
 
-    display_trajectory_publisher = rospy.Publisher(
-        "/move_group/display_planned_path",
-        moveit_msgs.msg.DisplayTrajectory,
-        queue_size=20,
-    )
-
     ##-------------------##
     ## initializing the moveit 
     moveit_commander.roscpp_initialize(sys.argv)
@@ -78,92 +72,16 @@ def main():
 
     ## TODO: left arm move out of the camera's fov
     pose_goal = Pose()
-    ...
-    
-    # # here get the rod state (from gazebo)
-    # print("rod's state is:", end = ':')
-    # rod.rod_state
-    # print('adding rod to rviz scene')
-    # print(rod.scene_add_rod(rod.rod_state))
 
-    # cable = cable_detection(100)
-    # # get the links' state (from gazebo)
-    # cable.get_links()
-
-    # # find the link that is closest to the rod
-    # # Use data on x-z plane
-    # ptr = {'idx': 0, 'val':10e6}
     rod_x = rod.rod_state.position.x
     rod_y = rod.rod_state.position.y
     rod_z = rod.rod_state.position.z
-    # for i in range(cable.no_of_links):
-    #     link_pos = cable.links[i].link_state.pose.position
 
-    #     cable_x = link_pos.x
-    #     cable_z = link_pos.z
-    #     val = (rod_x-cable_x)**2 + (rod_z-cable_z)**2
-    #     if val < ptr['val']:
-    #         ptr['idx'] = i
-    #         ptr['val'] = val
-
-    # print('contact section at: ', end = '')
-    # print(ptr['idx'])
-
-    # # ##-------------------##
-    # # ## calculate which link to hold on to for the RIGHT hand
-    # # ## the right hand will be used for keeping the cable in position
-    # # ## so here an arbitary value will be given
-
-    # # grabbing_point = ptr['idx'] - 4
-
-    # # ## move the right end-effector to the target link
-    # # #q = euler.euler2quat(pi, 0, pi/2, 'sxyz')
-
-    # # cable.get_links()
-    # # link1 = cable.links[grabbing_point].link_state.pose.position
-    # # link2 = cable.links[grabbing_point-1].link_state.pose.position
-    # # x = (link1.x + link2.x)/2
-    # # y = (link1.y + link2.y)/2
-    # # z = (link1.z + link2.z)/2
-    # # start = [x, y - 0.12 - 0.25, z]
-    # # yumi.go_to_pose_goal(ctrl_group[1], pose_goal)
-    
-    # # cable.get_links()
-    # # link2pick = cable.links[grabbing_point].link_state.pose.position
-    # # stop  = [x, y - 0.12, z]
-
-    # # goal.show(x=stop[0], y=stop[1], z=stop[2])
-
-    # # path = [start, stop]
-    # # cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 1, path)
-    # # yumi.execute_plan(cartesian_plan, ctrl_group[1])
-    # # print("go to pose have the cable in between gripper: ", end="")
-
-    # # ## left gripper grabs the link
-    # # gripper.r_close()
-
-    # # # #ctrl_group[0].set_end_effector_link('gripper_l_finger_l')
-    # # # #eef_link = ctrl_group[0].get_end_effector_link()
-    # # # #scene.attach_box(eef_link, box_name, touch_links=touch_links)
-    
-
-    ##-------------------##
-    ## calculate which link to hold on to for the LEFT hand
-    ## the left hand will be used for wrapping
-    ## a section of the link is 0.04
-    ## the r of the rod is given by the rod's state
-
-
-    ## move the left end-effector to the target link
-    # # pose_goal = geometry_msgs.msg.Pose()
-    # #q = euler.euler2quat(pi, 0, -pi/2, 'sxyz')
-    # link1 = cable.links[grabbing_point].link_state.pose.position
-    # link2 = cable.links[grabbing_point+1].link_state.pose.position
     x = rod_x
     y = 0
-    z = 0.15
-    start = [x, y + 0.1+0.25, z]
-    stop  = [x, y + 0.1, z]
+    z = 0.05
+    start = [x+0.01, y + 0.1+0.25, z]
+    stop  = [x+0.01, y + 0.1, z]
 
     goal.show(x=stop[0], y=stop[1], z=stop[2])
 
@@ -171,6 +89,7 @@ def main():
     cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
     print("go to pose have the cable in between gripper: ", end="")
+    rospy.sleep(2)
 
     # ## left gripper grabs the link
     # gripper.l_close()
@@ -184,8 +103,19 @@ def main():
     path = pg.generate_spiral(spiral_params, gripper_states)
     pg.publish_waypoints(path)
 
+    path1 = path[0:len(path)//2]
+    path2 = path[len(path)//2:]
+
     ## motion planning and executing
-    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path1)
+    ## fraction < 1: not successfully planned
+    print(fraction)
+    yumi.execute_plan(cartesian_plan, ctrl_group[0])
+    rospy.sleep(2)
+
+
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path2)
+    print(fraction)
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
     # # left gripper releases the link

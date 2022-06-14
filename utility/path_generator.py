@@ -34,7 +34,7 @@ class path_generator():
         t_0 = 0.2
         # ending angle theta_end
         t_e = 0.2+pi*2
-        n_samples = 8
+        n_samples = 12
         n = -1/2
         # offset theta_offset
         # t_os = 0

@@ -38,7 +38,7 @@ class rod_detection():
         # mock up pose and dims
         self.rod_state.position.x = 0.35
         self.rod_state.position.y = -0.15
-        self.rod_state.position.z = 0.25
+        self.rod_state.position.z = 0.3
         self.rod_state.orientation.x = 0.707
         self.rod_state.orientation.y = 0
         self.rod_state.orientation.z = 0
