@@ -47,8 +47,8 @@ class path_generator():
             dt = (t_e-t_0)*i/n_samples
             r = a*np.power((t_0+dt), n)
             t = -dt + t_os
-            # x = r*np.cos(t) + s[0]
-            x = -r*np.cos(t) + s[0]
+            x = r*np.cos(t) + s[0]
+            # x = -r*np.cos(t) + s[0]
             y = g[1] + 0.005*i
             z = r*np.sin(t) + s[2]
             path.append([x,y,z])

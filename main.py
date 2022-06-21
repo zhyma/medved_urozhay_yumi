@@ -50,11 +50,12 @@ def main():
 
     ##-------------------##
     ## reset the robot
-    # gripper.l_open()
-    # gripper.r_open()
+    gripper.l_open()
+    gripper.r_open()
     j_ctrl = joint_ctrl(ctrl_group)
-    j_ctrl.robot_default_l()
+    j_ctrl.robot_default_l_low()
     j_ctrl.robot_default_r_low()
+
     gripper.l_open()
     gripper.r_open()
 
@@ -68,8 +69,6 @@ def main():
     ## Need time to initializing
     rospy.sleep(3)
 
-    # # rospy.sleep(10)
-
     ## TODO: left arm move out of the camera's fov
     pose_goal = Pose()
 
@@ -79,7 +78,7 @@ def main():
 
     x = rod_x
     y = 0
-    z = 0.05
+    z = 0.10
     start = [x+0.01, y + 0.1+0.25, z]
     stop  = [x+0.01, y + 0.1, z]
 
@@ -90,6 +89,8 @@ def main():
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
     print("go to pose have the cable in between gripper: ", end="")
     rospy.sleep(2)
+
+    gripper.l_close()
 
     # ## left gripper grabs the link
     # gripper.l_close()
@@ -103,26 +104,30 @@ def main():
     path = pg.generate_spiral(spiral_params, gripper_states)
     pg.publish_waypoints(path)
 
-    path1 = path[0:len(path)//2]
-    path2 = path[len(path)//2:]
+    # path1 = path[0:len(path)//2]
+    # path2 = path[len(path)//2:]
 
     ## motion planning and executing
-    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path1)
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
     ## fraction < 1: not successfully planned
     print(fraction)
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
     rospy.sleep(2)
 
+    gripper.l_open()
+    gripper.r_open()
 
-    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path2)
-    print(fraction)
+    start = path[-1]
+    stop = [start[0], start[1], 0.1]
+
+    path = [start, stop]
+    cartesian_plan, fraction = yumi.plan_cartesian_traj(ctrl_group, 0, path)
     yumi.execute_plan(cartesian_plan, ctrl_group[0])
 
-    # # left gripper releases the link
-    # gripper.l_open()
 
-    # # left arm move out of the camera's fov
-    # yumi.go_to_pose_goal(yumi.ctrl_group[0], pose_goal)
+    
+
+    
 
 if __name__ == '__main__':
     main()

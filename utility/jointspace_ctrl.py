@@ -42,16 +42,25 @@ class joint_ctrl():
         r_joints_val = [ 1.4069, -2.0969, -0.7069, 0.2969, 0, 0, 0]
         self.ctrl_group[1].set_joint_value_target(r_joints_val)
         self.ctrl_group[1].go(wait=True)
+        self.ctrl_group[1].stop()
 
     def robot_default_l(self):
         l_joints_val = [-1.4069, -2.0969,  0.7069, 0.2969, 0, 0, 0]
         self.ctrl_group[0].set_joint_value_target(l_joints_val)
         self.ctrl_group[0].go(wait=True)
+        self.ctrl_group[0].stop()
+
+    def robot_default_l_low(self):
+        l_joints_val = [ -1.1694, -2.3213, 1.1694, -0.3665, 0.2792, 1.2392, -0.3491]
+        self.ctrl_group[0].set_joint_value_target(l_joints_val)
+        self.ctrl_group[0].go(wait=True)
+        self.ctrl_group[0].stop()
 
     def robot_default_r_low(self):
         r_joints_val = [ 1.1694, -2.3213, -1.1694, -0.3665, 0.2792, 1.2392, -0.3491]
         self.ctrl_group[1].set_joint_value_target(r_joints_val)
         self.ctrl_group[1].go(wait=True)
+        self.ctrl_group[1].stop()
 
 
 if __name__ == '__main__':
